@@ -1,11 +1,36 @@
 import 'package:flutter/material.dart';
 
-class NewTransaction extends StatelessWidget {
-  final Function new_tx;
+class NewTransaction extends StatefulWidget {
+  final Function newTx;
+
+  NewTransaction(this.newTx);
+
+  @override
+  State<NewTransaction> createState() => _NewTransactionState();
+}
+
+class _NewTransactionState extends State<NewTransaction> {
   final expenseController = TextEditingController();
+
   final amountController = TextEditingController();
 
-  NewTransaction(this.new_tx);
+  // new_tx(expenseController, amountController);
+
+  void submitData() {
+    final enteredExpense = expenseController.text;
+    final enteredAmount = double.parse(amountController.text);
+
+    if (enteredExpense.isEmpty || enteredAmount <= 0) {
+      return;
+    }
+
+    widget().newTx(
+      enteredExpense,
+      enteredAmount,
+    );
+
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,21 +46,24 @@ class NewTransaction extends StatelessWidget {
                 labelText: 'Expense Name',
               ),
               controller: expenseController,
+              onSubmitted: (_) => submitData(),
             ),
             TextField(
               decoration: InputDecoration(
                 labelText: 'Amount',
               ),
               controller: amountController,
+              keyboardType: TextInputType.number,
+              onSubmitted: (_) => submitData(),
             ),
             ElevatedButton(
-              onPressed: () {
-                new_tx(
-                  expenseController.text,
-                  double.parse(amountController.text),
-                );
-              },
-              child: Text('Add Expense'),
+              onPressed: submitData,
+              child: Text(
+                'Add Expense',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(
                   Colors.orange,
